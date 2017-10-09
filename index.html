@@ -35,8 +35,10 @@
 </div>
 
 <h3>Arrests by Conviction Date</h3>
-<div id = 'barchart'><svg height="500" width = "650"></svg></svg>
+<div id = 'barchart'><svg height="500" width = "650"></svg></div>
 
+<h3>Arrests by Offense Type</h3>
+ <div id = 'arcs'></div>
 
 </body>
 
@@ -63,51 +65,6 @@
         var box_height = $('.feature-row').height();
         console.log('box_height' + box_height)
         $('.hero-feature').css('height', (box_height - (box_height * .3)).toString() + 'px');
-    };
-
-
-    function progress_arcs(chart_id, percentComplete) {
-
-        var scale = d3.scaleLinear()
-            .domain([0, 100])
-            .range([0, 2 * Math.PI]);
-
-        var endAngle = scale(percentComplete)
-
-        var svg = d3.select(chart_id)
-            .append("svg")
-            .attr("width", 200)
-            .attr("height", 200)
-            .append("g")
-            .attr("transform", "translate(100,100)");
-
-        var arc = d3.arc()
-            .innerRadius(40)
-            .outerRadius(60)
-            .startAngle(0)
-            .endAngle(endAngle);
-
-        var outerfullarc = d3.arc()
-            .innerRadius(62)
-            .outerRadius(63)
-            .startAngle(0)
-            .endAngle(Math.PI * 2);
-
-        var outerfullpath = svg.append("path")
-            .attr("class", "arc")
-            .attr("d", outerfullarc);
-
-        var path = svg.append("path")
-            .attr("class", "arc")
-            .transition()
-            .duration(800)
-            .attr("d", arc);
-
-        var text = svg.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('class', 'progress_arc_text')
-            .attr('dy', '.35em')
-            .text(percentComplete.toString() + '%');
     };
 
     function timeline(div) {
@@ -395,8 +352,100 @@ d3.csv("arrestsbyconviction.csv", function(error, data) {
         tooltip.style("display", "none");
     });
 
-});
+}); //d3.csv
 
+progress_arcs('#arcs', 36, 16);
+
+function progress_arcs(chart_id, misdo, felony) {
+
+
+        var scale = d3.scaleLinear()
+            .domain([0, 100])
+            .range([0, 2 * Math.PI]);
+
+
+        var percentComplete = Math.round((misdo / (misdo + felony)*100)),
+            percentCompleteInner = Math.round((felony / (misdo + felony)*100))
+
+        var endAngle = scale(percentComplete);
+        var innerEndAngle = scale(percentCompleteInner);
+
+        var svg = d3.select(chart_id)
+            .append("svg")
+            .attr("width", 400)
+            .attr("height", 400)
+            .append("g")
+            .attr("transform", "translate(200,200)");
+
+        
+
+        var innerarc = d3.arc()
+            .innerRadius(110)
+            .outerRadius(145)
+            .startAngle(0)
+            .endAngle(innerEndAngle);
+
+        var arc = d3.arc()
+            .innerRadius(150)
+            .outerRadius(185)
+            .startAngle(0)
+            .endAngle(endAngle);
+
+        var outerfullarc = d3.arc()
+            .innerRadius(189)
+            .outerRadius(192)
+            .startAngle(0)
+            .endAngle(Math.PI * 2);
+
+        var outerfullpath = svg.append("path")
+            .attr("class", "outerfullarc")
+            .attr("d", outerfullarc);
+
+        var path = svg.append("path")
+            .attr("class", "arc");
+
+        path
+            .transition()
+            .duration(800)
+            .attr("d", arc);
+
+
+        path
+            .on("mouseover", function(d) {
+                svg.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('class', 'progress_arc_text')
+                .attr('dy', '.35em')
+                .text(misdo.toString())
+                })
+            .on("mouseout", function(d) {
+               d3.select('.progress_arc_text').remove();
+            });
+
+        var innerpath = svg.append("path")
+            .attr("class", "innerarc");
+        
+        innerpath   
+            .transition()
+            .duration(1100)
+            .attr("d", innerarc);
+        
+
+        innerpath.on("mouseover", function(d) {
+            svg.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('class', 'progress_arc_text')
+            .attr('dy', '.35em')
+            .text(felony.toString())
+            })
+            .on("mouseout", function(d) {
+               d3.select('.progress_arc_text').remove();
+            });
+
+
+    //     var text = 
+    // };
+}
 
 
 </script>

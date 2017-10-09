@@ -83,3 +83,26 @@ rect.bar:hover {
 		width = 380px;
 	}	
 }
+
+
+
+
+
+.arc {
+	fill: #67a9cf;
+}
+
+.innerarc {
+	fill: #ef8a62;
+}
+
+.outerfullarc {
+	fill: #6F257F;
+}
+
+
+#arcs text {
+	fill: #6F257F;
+	font-size: 34px;
+	font-family: sans-serif;
+}
