@@ -26,19 +26,24 @@
 <body>
 
 <h1>Since October 13 2016 to May 8 2017, ICE completed 54 courthouse arrests</h1>   
+<div style = "clear:both"></div>
 <div id = 'timeline-arrests'></div>
+<div style = "clear:both"></div>
 
 <h3>Arrests by County</h3>
-
+<div data-tap-disabled="true">
 <div class="mapwrapper">
     <div id='map'></div>
-</div>
+</div></div>
 
 <h3>Arrests by Conviction Date</h3>
 <div id = 'barchart'><svg height="500" width = "650"></svg></div>
 
 <h3>Arrests by Offense Type</h3>
  <div id = 'arcs'></div>
+
+<canvas id="barchartconvictions" width="400" height="400"></canvas>
+<canvas id="arrestbarchart" width="400" height="400"></canvas>
 
 </body>
 
@@ -50,30 +55,20 @@
     <script src="https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js"></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.js'></script>
 
-    <!-- jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
 
 
 <script>
 
-    function equal_success_columns() {
-        var box_height = $('#success-vision').height();
-        $('.success-vision').css('height', (box_height + (box_height * .1)).toString() + 'px');
-    };
-
-    function equal_feature_columns() {
-        var box_height = $('.feature-row').height();
-        console.log('box_height' + box_height)
-        $('.hero-feature').css('height', (box_height - (box_height * .3)).toString() + 'px');
-    };
 
     function timeline(div) {
 
         var width = 1000;
         var height = 250;
-        var padding = 120;
-        var dotmargintop = 11;
-        var dotmarginbottom = 15;
+        var padding = 80;
+        var dotmargintop = 15; //CONTROLS DOTS ABOVE THE TIMELINE
+        var dotmarginbottom = 5;
+        var dotsize = '11px';
 
         var svg = d3.select('#' + div).append('svg')
             .attr('width', width)
@@ -113,8 +108,6 @@
             .domain(["misdo", "felony"])
             .range(["#67a9cf", "#ef8a62"]);
 
-        console.log('orient text');
-        console.log(orientText('D'));
 
 
         var testrotate = orientText('J');
@@ -154,7 +147,7 @@
 
 
         d3.csv('icearrests.csv', function(error, data) {
-            if (error) return error;
+            if (error) throw error;
 
             data.forEach(function(d) {
                 d.convictYear = +d.convictYear;
@@ -172,7 +165,7 @@
                 .attr('class', 'event');
 
             eventdot.append('circle')
-                .attr('r', '6px')
+                .attr('r', dotsize)
                 .attr('fill', function(d) {
                     return eventColor(d.ctype)
                 })
@@ -191,30 +184,25 @@
                 });
 
 
-            eventdot.append('text')
-                .attr('text-anchor', 'left')
-                .attr('transform', function(d) {
-                    return orient(d)
-                })
-                .attr('dx', '.7em')
-                .attr('dy', '-.2em')
-                .attr('font-size', '10px')
-                .attr('fill', function(d) {
-                    return eventColor(d.ctype)
-                })
-                .text(function(d) {
-                    return d.arrDate.toLocaleDateString() 
-                });
+//THIS IS THE FUNCTION FOR ADDING TEXT TO THE DOTS.
+
+            // eventdot.append('text')
+            //     .attr('text-anchor', 'left')
+            //     .attr('transform', function(d) {
+            //         return orient(d)
+            //     })
+            //     .attr('dx', '.7em')
+            //     .attr('dy', '-.2em')
+            //     .attr('font-size', '10px')
+            //     .attr('fill', function(d) {
+            //         return eventColor(d.ctype)
+            //     })
+            //     .text(function(d) {
+            //         return d.arrDate.toLocaleDateString() 
+            //     });
         }); //end .csv
 
-        svg.selectAll('g.event')
-
-        //LEGEND
-        var legend = d3.select('#timeline-arrests svg').select('.legend')
-            .append('g')
-       
-        legend.append('circle')
-            .attr('r', '6px')
+            
     }; //end timeline
 
     timeline("timeline-arrests");
@@ -274,6 +262,22 @@ var popup = new mapboxgl.Popup({
     map.on('mouseleave', 'county', function() {
         map.getCanvas().style.cursor = '';
         popup.remove();
+    });
+
+    //click. Will only work on mobile.
+
+    map.on('click', 'county', function(e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+        console.log(e.lngLat);
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+
+        popup.setLngLat(e.lngLat)
+            .setHTML("<b>" + e.features[0].properties.name + "</b><br />arrests: " + e.features[0].properties.arrests)
+            .addTo(map);
+
     });
 
 
@@ -418,6 +422,14 @@ function progress_arcs(chart_id, misdo, felony) {
                 .attr('dy', '.35em')
                 .text(misdo.toString())
                 })
+            .on('click', function(d){
+                svg.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('class', 'progress_arc_text')
+                    .attr('dy', '.35em')
+                    .text(misdo.toString());
+                setTimeout(function(){ d3.select('.progress_arc_text').remove();} , 2000);
+            })
             .on("mouseout", function(d) {
                d3.select('.progress_arc_text').remove();
             });
@@ -438,6 +450,14 @@ function progress_arcs(chart_id, misdo, felony) {
             .attr('dy', '.35em')
             .text(felony.toString())
             })
+           .on('click', function(d){
+                svg.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('class', 'progress_arc_text')
+                    .attr('dy', '.35em')
+                    .text(felony.toString());
+                setTimeout(function(){ d3.select('.progress_arc_text').remove();} , 2000);
+            })
             .on("mouseout", function(d) {
                d3.select('.progress_arc_text').remove();
             });
@@ -446,6 +466,98 @@ function progress_arcs(chart_id, misdo, felony) {
     //     var text = 
     // };
 }
+
+
+
+////CHART.JS BAR CHARTS
+
+var convictionschart = document.getElementById("barchartconvictions").getContext('2d');
+var convictchart = new Chart(convictionschart, {
+    type: 'bar',
+    data: {
+        labels: ["Case Pending",
+                    "<2003",
+                    "2003",
+                    "2004",
+                    "2005",
+                    "2006",
+                    "2007",
+                    "2008",
+                    "2009",
+                    "2010",
+                    "2011",
+                    "2012",
+                    "2013",
+                    "2014",
+                    "2015",
+                    "2016",
+                    "2017",],
+        datasets: [{
+            label: '# of Cases',
+            data: [15,1,1,1,1,1,2,3,1,3,0,3,2,3,5,6,5,],
+            backgroundColor: [
+                '#67a9cf', '#ef8a62', '#ef8a62', '#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62','#ef8a62', '#ef8a62',
+            ],
+            borderColor: [
+
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                },
+            }],
+             xAxes: [{
+                gridLines: {
+                    display: false
+                },
+            }],
+        }
+    }
+});
+
+
+var arrestbarchart = document.getElementById("arrestbarchart").getContext('2d');
+var arrestchart = new Chart(arrestbarchart, {
+    type: 'bar',
+    data: {
+        labels: ["Oct", "Nov", "Dec","Jan", "Feb", "Mar", "Apr", "May"],
+        datasets: [{
+            data: [3,7,7,6,2,1,1,5],
+            backgroundColor: '#ef8a62',
+            borderColor: [
+
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        legend: {
+            display: false
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                },
+            }],
+             xAxes: [{
+                gridLines: {
+                    display: false
+                },
+            }],
+        }
+    }
+});
+
+
 
 
 </script>

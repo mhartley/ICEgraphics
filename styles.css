@@ -71,7 +71,12 @@ rect.bar:hover {
 
 @media all and (max-width: 600px) {
 	#timeline-arrests {
-		 transform: rotate(90deg);
+		 /*transform: rotate(90deg);*/
+		max-width: 100%;
+		overflow-x: scroll;
+		display: block;
+		padding:15px;
+		margin: auto;
 	}
 
 	div.mapwrapper {
