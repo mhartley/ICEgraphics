@@ -1,4 +1,13 @@
+#legend {
+	font:12px sans-serif;
+	margin: auto;
+}
 
+#legend circle{
+	fill-opacity: 0.6;
+	stroke: 1px;
+
+}
 
 #timeline-arrests circle {
 	fill-opacity: 0.6;
@@ -90,7 +99,9 @@ rect.bar:hover {
 }
 
 
-
+.icebarchart {
+	max-width: 500px;
+}
 
 
 .arc {
