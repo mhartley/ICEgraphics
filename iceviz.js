@@ -192,7 +192,7 @@ function progress_arcs(chart_id, misdo, felony) {
         }
 
 
-        d3.csv('icearrests.csv', function(error, data) {
+        d3.csv('http://www.westword.com/theme/den/9583140/icearrests.csv', function(error, data) {
             if (error) throw error;
 
             data.forEach(function(d) {

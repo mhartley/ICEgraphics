@@ -36,7 +36,7 @@ PCS,0,D,2017-01-27,felony
 False Statements,2008,A,2017-01-30,felony
 BWAI,2010,A,2017-02-08,misdo
 Take vehicle,2005,D,2017-02-08,misdo
-Distro  ,0,D,2017-02-17,felony
+Distro ,0,D,2017-02-17,felony
 DWAI,2016,A,2017-02-17,misdo
 PCS,2017,J,2017-03-06,felony
 DWAI,2013,A,2017-03-10,felony
@@ -48,6 +48,6 @@ PCS,2008,A,2017-04-13,misdo
 Poss Controlled Substance,2017,D,2017-04-20,misdo
 Violation P/O,2014,D,2017-05-02,misdo
 Distribution Cocaine,0,D,2017-05-04,felony
-"DWAI, DWAI Pend 3rd",0,D,2017-05-05,misdo
-"PCS, WEAPON",0,D,2017-05-08,misdo
+DWAI Pend 3rd,0,D,2017-05-05,misdo
+PCS WEAPON,0,D,2017-05-08,misdo
 Vehicular Assault & DUI,2017,D,2017-05-08,felony
